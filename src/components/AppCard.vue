@@ -1,41 +1,27 @@
 <template>
   <div class="card">
+    <div v-if="hasHeader" class="card-header">
+      <slot name="header"></slot>
+    </div>
     <div class="card-body">
-      <span class="badge bg-secondary ">{{ typeName }}</span>
-      <h5 class="card-title mt-2 ">{{title}}</h5>
-      <p class="card-text">{{ content }}</p>
-      <a href="#" :class="isLikeClass" class="btn">좋아요</a>
+      <slot :child-mssage="childMessage" helloMessage="안녕하세요">#body</slot> <!-- props처럼 부모요소에게 값을 바인딩 할수있다 -->
+    </div>
+    <div v-if="$slots.footer" class="card-footer text-muted"> <!-- $slots 내장 객체를 사용하여 값이 없으면 렌더링이 안되게 가능하다  -->
+      <slot name="footer"></slot>
     </div>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 
 export default {
-  props: {
-    type: {
-      type: String,
-      default: 'news',
-    },
-    title: {
-      type: String,
-      required: true
-    },
-    content: {
-      type: String,
-      // required: true
-    },
-    isLike: {
-      type: Boolean,
-      default: false
-    }
-  },
+  setup (props, {slots}) {
+    // context.slots
+    const hasHeader = computed(()=> !!slots.header);
+    const childMessage = ref('자식 컴포넌트 메시지');
 
-  setup (props) {
-    const isLikeClass =computed(()=> props.isLike ?'btn-danger' : 'btn-outline-danger');
-    const typeName = computed(() => props.type === 'news' ? '뉴스' : '공지사항');
-    return { isLikeClass, typeName, }
+    return { childMessage, hasHeader }
   }
 }
 </script>
